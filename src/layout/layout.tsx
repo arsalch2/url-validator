@@ -35,20 +35,10 @@ export default function Layout() {
     <Stack spacing={2} sx={{ flexGrow: 1 }}>
       <ThemeProvider theme={darkTheme}>
         <AppBar position="static" color="primary">
-          <Toolbar variant="dense">
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" color="inherit" component="div">
-              {appBarLabel("Tuta Url Validator")}
-            </Typography>
-          </Toolbar>
-        </AppBar> 
+          <Typography variant="h6" color="inherit" component="div">
+            {appBarLabel("Tuta Url Validator")}
+          </Typography>
+        </AppBar>
       </ThemeProvider>
     </Stack>
   );
