@@ -35,23 +35,16 @@ const UrlValidator: React.FC = () => {
   const [url, setUrl] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [color, setColor] = useState<string>("black");
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Check URL format
   const isValidUrl = (url: string): boolean => urlPattern.test(url);
 
   // Throttled URL check handler
   const checkUrlExistence = useCallback(async (urlToCheck: string) => {
-    if (!isValidUrl(urlToCheck)) {
-      setMessage("Invalid URL format");
-      setColor("red");
-      return;
-    }
-
-    setMessage("Valid URL format, checking existence...");
-    setColor("blue");
-
+    setLoading(true);
     const result = await mockServerCheck(urlToCheck);
-
+    setLoading(false);
     if (result.exists) {
       setMessage(`URL exists and is a ${result.type}`);
       setColor("green");
@@ -61,13 +54,26 @@ const UrlValidator: React.FC = () => {
     }
   }, []);
 
-  // Debounce the URL check
+  // Immediate URL format validation
   useEffect(() => {
+    if (url.trim() && isValidUrl(url.trim())) {
+      setMessage("Valid URL format");
+      setColor("blue");
+    } else {
+      setLoading(false);
+      setMessage("Invalid URL format");
+      setColor("red");
+    }
+  }, [url]);
+
+  // Debounce the URL existence check
+  useEffect(() => {
+    if (isValidUrl(url.trim())) {
+      setLoading(true); // Show loading as soon as valid URL is detected
+    }
     const handler = setTimeout(() => {
-      if (url.trim()) {
+      if (url.trim() && isValidUrl(url.trim())) {
         checkUrlExistence(url.trim());
-      } else {
-        setMessage("");
       }
     }, 500); // Throttle existence check to 500ms
 
@@ -84,7 +90,7 @@ const UrlValidator: React.FC = () => {
         placeholder="Enter URL"
         style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
       />
-      <div style={{ color }}>{message}</div>
+      <div style={{ color }}> {loading ? "Checking..." : message}</div>
     </div>
   );
 };
